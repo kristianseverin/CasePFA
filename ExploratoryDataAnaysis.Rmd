@@ -1,0 +1,78 @@
+---
+title: "ExploratoryDataAnalysis"
+author: "Kristian Severin"
+date: "2024-02-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# load packages
+pacman::p_load(tidyverse, ggplot2, lubridate, fable, fpp3)
+
+```
+
+```{r}
+# load data
+df <- read.csv("sf_data.csv", sep = ";") 
+#df <- format(df, scientific = F) # for sanity purposes use only to demonstrate correct joined df's
+
+df_districts <- read.csv("sf_districts.csv", sep = ";")
+#df_districts <- format(df_districts, scientific = F)
+
+```
+
+```{r}
+# merge based on id
+df_merged <- df %>% left_join(df_districts, by = "id") # check district:mission and label:violent match id:18023216504170
+
+# get merged df without na's
+df_merged_clean <- na.omit(df_merged) # similar to 'right_join'
+```
+
+
+```{r}
+# make datatypes the desired types
+df_merged_clean$category <- as.factor(df_merged_clean$category)
+df_merged_clean$description <- as.factor(df_merged_clean$description)
+df_merged_clean$weekday <- factor(df_merged_clean$weekday, levels = c("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"), ordered = TRUE)
+df_merged_clean$date <- as.Date(df_merged_clean$date, "%m/%d/%Y")
+
+df_merged_clean$date <- as_date(df_merged_clean$date)
+
+df_merged_clean$resolution <- as.factor(df_merged_clean$resolution)
+df_merged_clean$label <- as.factor(df_merged_clean$label)
+df_merged_clean$district <- as.factor(df_merged_clean$district)
+
+
+
+```
+
+```{r}
+# make tsibble for time series purposes
+df_time <- as_tibble(df_merged_clean)
+df_time <- df_time %>% mutate(date = as_date(date))
+
+df1 <- df_time %>% select(date, category, description, resolution, label, district)
+
+```
+
+
+```{r}
+df_tsibble <- as_tsibble(df1, key = c(category, description, resolution, label, district), index = date)
+
+```
+
+
+
+```{r}
+ggplot(df1, aes(x = resolution))+
+  geom_bar()+
+  theme(legend.text = element_text(angle = 45))
+```
+
+
