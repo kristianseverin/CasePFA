@@ -9,7 +9,7 @@ Timeseries XGBoost regression models were created and tested. Target variable wa
 XGBoostRegressor: using number of crimes per day as target and timeseries components as numerical inputs. 
 XGBoostCatAndNum: using number of crimes per day as target and timeseries components as numerical inputs. Categorical variables were made compatible to use as inputs by making an embedding model. 
 
-Models can be run from the command line as such:
+Models can be run from the command line using the runModels.py script as such:
 python runModels.py -d path/to/csv/with/numdata -m XGBoostRegressor -s /path/to/folder/where/plot/should/be/saved/
 
 -d: path to the data found in src/Data/. Should point to dfCatAndNum.csv if the model with both numerical and categorical variables should be run. Should point to dfNumeric.csv if the numerical regressor is to be run.
